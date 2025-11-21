@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Undangan Pernikahan Eksklusif</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
+
+    <style>
+        /* --- 1. VARIABEL & RESET --- */
+        :root {
+            --gold: #d4af37;
+            --glass-bg: rgba(20, 20, 20, 0.65);
+            --glass-border: rgba(255, 255, 255, 0.15);
+            --text-white: #f5f5f5;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+            background: #111;
+            color: var(--text-white);
+        }
+
+        /* --- 2. BACKGROUND GAMBAR --- */
+        .bg-container {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -10;
+        }
+
+        .bg-image {
+            width: 100%; height: 100%;
+            /* Gambar Background (Bisa diganti) */
+            background-image: url('https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExNDBkZmQxYndxcXhpajdwbzk0Yzk4NmhiaHJpeHFmb3IxeHE0dmMxMyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/bqSkJ4IwNcoZG/giphy.gif');
+            background-size: cover; background-position: center;
+            /* Filter gelap supaya teks terbaca jelas */
+            filter: brightness(0.6);
+            animation: zoomSlow 30s infinite alternate ease-in-out;
+        }
+        @keyframes zoomSlow { from { transform: scale(1); } to { transform: scale(1.1); } }
+
+        /* --- 3. EFEK SALJU (SNOW) --- */
+        .snow-flake {
+            position: fixed; top: -10px; background: white; border-radius: 50%;
+            pointer-events: none; box-shadow: 0 0 5px rgba(255, 255, 255, 0.8); z-index: 1;
+        }
+
+        /* --- 4. COVER SCREEN (PINTU DEPAN) --- */
+        #cover-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7); backdrop-filter: blur(8px);
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            z-index: 100; transition: opacity 0.8s ease, visibility 0.8s;
+        }
+        
+        .cover-content { text-align: center; animation: fadeUp 1s ease-out; }
+        
+        .cover-title { 
+            font-family: 'Playfair Display', serif; font-size: 3rem; margin-bottom: 10px; 
+            color: var(--gold); text-shadow: 0 5px 15px rgba(0,0,0,0.5);
+        }
+
+        .btn-open {
+            margin-top: 25px; padding: 12px 40px; border-radius: 50px;
+            border: 1px solid var(--gold); background: rgba(255,255,255,0.05);
+            color: white; cursor: pointer; transition: 0.3s; letter-spacing: 2px;
+            font-family: 'Poppins', sans-serif; text-transform: uppercase; font-size: 0.8rem;
+        }
+        .btn-open:hover { background: var(--gold); color: #000; box-shadow: 0 0 20px rgba(212, 175, 55, 0.5); }
+
+        /* --- 5. KONTEN UTAMA (KARTU KACA) --- */
+        #main-content {
+            display: flex; justify-content: center; align-items: center;
+            height: 100%; opacity: 0; visibility: hidden;
+            transition: opacity 1.5s ease; position: relative; z-index: 10;
+        }
+
+        .glass-card {
+            width: 90%; max-width: 480px; max-height: 90vh;
+            overflow-y: auto; /* Scrollable jika konten panjang */
+            padding: 35px 25px;
+            background: var(--glass-bg); backdrop-filter: blur(15px);
+            border: 1px solid var(--glass-border); border-radius: 20px;
+            text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+            transform: translateY(30px); transition: transform 1s ease;
+        }
+        .glass-card::-webkit-scrollbar { width: 0; } /* Sembunyikan scrollbar */
+        .card-show .glass-card { transform: translateY(0); }
+
+        .ornament { font-size: 1.5rem; color: var(--gold); margin-bottom: 10px; }
+        
+        h1 { 
+            font-family: 'Playfair Display', serif; font-size: 2.2rem; 
+            background: linear-gradient(to right, #fff, var(--gold), #fff);
+            -webkit-background-clip: text; color: transparent; 
+            background-size: 200%; animation: shine 5s linear infinite; margin-bottom: 10px;
+        }
+        @keyframes shine { to { background-position: 200% center; } }
+
+        .message { font-size: 0.9rem; line-height: 1.7; margin-bottom: 20px; color: #ddd; }
+
+        .date-box { 
+            padding: 10px 20px; border: 1px solid var(--gold); 
+            display: inline-block; border-radius: 8px; margin-bottom: 25px;
+            background: rgba(0,0,0,0.3);
+        }
+        .date-day { font-weight: bold; color: var(--gold); display: block; font-size: 1.1rem; }
+
+        /* --- 6. PETA GOOGLE MAPS --- */
+        .map-container {
+            width: 100%; height: 180px; border-radius: 10px; overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.2); margin-bottom: 15px;
+        }
+        iframe { width: 100%; height: 100%; border: 0; filter: grayscale(20%) contrast(1.1); }
+
+        .btn-location {
+            display: inline-block; padding: 10px 25px; background: var(--gold);
+            color: #111; text-decoration: none; border-radius: 30px;
+            font-size: 0.85rem; font-weight: 600; margin-bottom: 20px;
+            transition: 0.3s;
+        }
+        .btn-location:hover { background: #fff; transform: scale(1.05); }
+
+        /* --- 7. VISITOR COUNTER (LOGO MATA) --- */
+        .view-counter {
+            display: inline-flex; align-items: center; gap: 6px;
+            margin-top: 10px; padding: 6px 15px;
+            background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px; font-size: 0.75rem; color: rgba(255, 255, 255, 0.6);
+        }
+        .eye-icon { animation: blink 4s infinite; }
+        @keyframes blink { 0%, 40%, 100% { transform: scaleY(1); } 20% { transform: scaleY(0.1); } }
+
+        /* --- 8. TOMBOL MUSIK --- */
+        .music-btn { 
+            position: fixed; bottom: 20px; right: 20px; width: 45px; height: 45px; 
+            background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3);
+            color: white; border-radius: 50%; display: flex; justify-content: center; 
+            align-items: center; cursor: pointer; z-index: 50; animation: pulse 2s infinite; 
+        }
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(255,255,255,0.2); } 70% { box-shadow: 0 0 0 10px rgba(0,0,0,0); } }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+    <div class="bg-container"><div class="bg-image"></div></div>
+    
+    <audio id="bg-music" loop>
+        <source src="https://files.catbox.moe/xavnah.flac" type="audio/mpeg">
+    </audio>
+
+    <div id="cover-screen">
+        <div class="cover-content">
+            <div class="ornament">❄️</div>
+            <h2 class="cover-title">The Wedding</h2>
+            <p style="color: #ccc; letter-spacing: 2px; font-size: 0.9rem;">ROMEO & JULIET</p>
+            <button class="btn-open" onclick="openInvitation()">Buka Undangan</button>
+        </div>
+    </div>
+
+    <div id="main-content">
+        <div class="glass-card">
+            <div class="ornament">❦</div>
+            <p style="text-transform: uppercase; font-size: 0.7rem; letter-spacing: 3px; margin-bottom: 5px; opacity: 0.8;">Save The Date</p>
+            <h1>Romeo & Juliet</h1>
+            
+            <p class="message">
+                Dengan memohon Rahmat Tuhan, kami mengundang Bapak/Ibu untuk hadir di hari bahagia kami.
+            </p>
+
+            <div class="date-box">
+                <span class="date-day">Minggu, 28 Des 2025</span>
+                <span style="font-size: 0.8rem; opacity: 0.8;">18.00 WIB - Selesai</span>
+            </div>
+
+            <div class="map-container">
+                <iframe 
+                    src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d8310.531432990252!2d112.74405824347227!3d-7.320223500202979!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2dd7fbb2f31f58a1%3A0xcc506b2527a96bbd!2sThe%20Southern%20Hotel%20Surabaya!5e1!3m2!1sid!2sid!4v1763710990547!5m2!1sid!2sid" 
+                    allowfullscreen="" loading="lazy">
+                </iframe>
+            </div>
+
+            <a href="https://maps.app.goo.gl/Sow82tnPSgrY59xz7" target="_blank" class="btn-location">
+                📍 Petunjuk Arah
+            </a>
+
+            <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin: 10px 0;">
+
+            <div class="view-counter">
+                <span class="eye-icon">👁️</span>
+                <span id="visitor-count">...</span>
+                <span>Tamu Melihat</span>
+            </div>
+            
+        </div>
+    </div>
+
+    <div class="music-btn" onclick="toggleMusic()">🎵</div>
+
+    <script>
+        const cover = document.getElementById('cover-screen');
+        const main = document.getElementById('main-content');
+        const music = document.getElementById('bg-music');
+        const musicBtn = document.querySelector('.music-btn');
+        let isPlaying = false;
+
+        // --- 1. FUNGSI BUKA UNDANGAN ---
+        function openInvitation() {
+            cover.style.opacity = '0';
+            cover.style.visibility = 'hidden';
+            main.style.visibility = 'visible';
+            main.style.opacity = '1';
+            main.classList.add('card-show');
+            
+            music.play().catch(() => console.log("Autoplay dicegah browser"));
+            isPlaying = true;
+            
+            startSnow();
+        }
+
+        // --- 2. FUNGSI MUSIK ---
+        function toggleMusic() {
+            if (isPlaying) {
+                music.pause();
+                musicBtn.style.opacity = '0.5';
+                musicBtn.style.animation = 'none';
+            } else {
+                music.play();
+                musicBtn.style.opacity = '1';
+                musicBtn.style.animation = 'pulse 2s infinite';
+            }
+            isPlaying = !isPlaying;
+        }
+
+        // --- 3. FUNGSI SALJU ---
+        function startSnow() {
+            setInterval(() => {
+                const snow = document.createElement('div');
+                snow.classList.add('snow-flake');
+                snow.style.left = Math.random() * 100 + 'vw';
+                const size = Math.random() * 4 + 2 + 'px';
+                snow.style.width = size; snow.style.height = size;
+                const duration = Math.random() * 5 + 5 + 's';
+                snow.style.animationDuration = duration;
+                snow.style.opacity = Math.random() * 0.5 + 0.3;
+                document.body.appendChild(snow);
+                setTimeout(() => snow.remove(), parseFloat(duration) * 1000);
+            }, 150);
+        }
+
+        // --- 4. REALTIME VISITOR COUNTER (SERVER BARU) ---
+        function updateRealtimeCounter() {
+            const counterElement = document.getElementById('visitor-count');
+            
+            // ⚠️ WAJIB GANTI BAGIAN INI!
+            // Masukkan nama unik Anda sendiri (tanpa spasi).
+            // Contoh: 'wedding-agung-putri-2025'
+            // Jika nama ini baru, hitungan akan mulai otomatis dari 1.
+            const namespace = '02ufoidshjfl103eu0adbnqwieh120'; 
+            const key = 'visit';
+
+            // Menggunakan API CounterAPI.dev yang lebih stabil
+            fetch(`https://api.counterapi.dev/v1/${namespace}/${key}/up`)
+                .then(response => response.json())
+                .then(data => {
+                    // Menampilkan jumlah count murni dari server
+                    counterElement.innerText = data.count.toLocaleString('id-ID');
+                })
+                .catch(error => {
+                    console.error('Gagal mengambil data:', error);
+                    counterElement.innerText = "-"; 
+                });
+        }
+
+        // Jalankan fungsi
+        updateRealtimeCounter();
+    </script>
+</body>
+</html>
